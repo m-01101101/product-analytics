@@ -58,6 +58,14 @@ altair-data-server = ">=0.4.0"
 
 [[package]]
 category = "main"
+description = "A small Python module for determining appropriate platform-specific dirs, e.g. a \"user data dir\"."
+name = "appdirs"
+optional = false
+python-versions = "*"
+version = "1.4.4"
+
+[[package]]
+category = "main"
 description = "Disable App Nap on OS X 10.9"
 marker = "sys_platform == \"darwin\" or platform_system == \"Darwin\" or python_version >= \"3.3\" and sys_platform == \"darwin\""
 name = "appnope"
@@ -114,6 +122,14 @@ version = "0.2.0"
 
 [[package]]
 category = "main"
+description = "Quick and easy python benchmarking."
+name = "bench-it"
+optional = false
+python-versions = "*"
+version = "1.0.1"
+
+[[package]]
+category = "main"
 description = "An easy safelist-based HTML-sanitizing tool."
 name = "bleach"
 optional = false
@@ -154,12 +170,31 @@ version = "3.0.4"
 
 [[package]]
 category = "main"
+description = "Composable command line interface toolkit"
+name = "click"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
+version = "7.1.2"
+
+[[package]]
+category = "main"
 description = "Cross-platform colored terminal text."
-marker = "python_version >= \"3.3\" and sys_platform == \"win32\" or sys_platform == \"win32\""
 name = "colorama"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 version = "0.4.4"
+
+[[package]]
+category = "main"
+description = "Updated configparser from Python 3.8 for Python 2.6+."
+name = "configparser"
+optional = false
+python-versions = ">=3.6"
+version = "5.0.1"
+
+[package.extras]
+docs = ["sphinx", "jaraco.packaging (>=3.2)", "rst.linker (>=1.9)"]
+testing = ["pytest (>=3.5,<3.7.3 || >3.7.3)", "pytest-checkdocs (>=1.2.3)", "pytest-flake8", "pytest-cov", "jaraco.test (>=3.2.0)", "pytest-black (>=0.3.7)", "pytest-mypy"]
 
 [[package]]
 category = "main"
@@ -190,6 +225,21 @@ version = "0.6.0"
 
 [[package]]
 category = "main"
+description = "Automatically find diff lines that need test coverage."
+name = "diff-cover"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
+version = "2.6.1"
+
+[package.dependencies]
+Jinja2 = ">=2.7.1"
+jinja2-pluralize = "*"
+pluggy = "*"
+pygments = "*"
+six = ">=1.6.1"
+
+[[package]]
+category = "main"
 description = "Discover and load entry points from installed packages."
 name = "entrypoints"
 optional = false
@@ -216,6 +266,18 @@ name = "idna"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 version = "2.10"
+
+[[package]]
+category = "main"
+description = "Correctly generate plurals, singular nouns, ordinals, indefinite articles; convert numbers to words"
+name = "inflect"
+optional = false
+python-versions = ">=3.6"
+version = "5.0.2"
+
+[package.extras]
+docs = ["sphinx", "jaraco.packaging (>=3.2)", "rst.linker (>=1.9)"]
+testing = ["pytest (>=3.5,<3.7.3 || >3.7.3)", "pytest-checkdocs (>=1.2.3)", "pytest-flake8", "pytest-cov", "jaraco.test (>=3.2.0)", "pygments", "pytest-black (>=0.3.7)", "pytest-mypy"]
 
 [[package]]
 category = "main"
@@ -324,6 +386,18 @@ MarkupSafe = ">=0.23"
 
 [package.extras]
 i18n = ["Babel (>=0.8)"]
+
+[[package]]
+category = "main"
+description = "Jinja2 pluralize filters."
+name = "jinja2-pluralize"
+optional = false
+python-versions = "*"
+version = "0.3.0"
+
+[package.dependencies]
+inflect = ">=0.2.4"
+jinja2 = ">=2.4"
 
 [[package]]
 category = "main"
@@ -645,6 +719,17 @@ version = "1.19.2"
 
 [[package]]
 category = "main"
+description = "Ordered YAML: drop-in replacement for PyYAML which preserves dict ordering"
+name = "oyaml"
+optional = false
+python-versions = "*"
+version = "1.0"
+
+[package.dependencies]
+pyyaml = "*"
+
+[[package]]
+category = "main"
 description = "Core utilities for Python packages"
 name = "packaging"
 optional = false
@@ -689,6 +774,14 @@ version = "0.7.1"
 
 [package.extras]
 testing = ["docopt", "pytest (>=3.0.7)"]
+
+[[package]]
+category = "main"
+description = "Utility library for gitignore style pattern matching of file paths."
+name = "pathspec"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
+version = "0.8.1"
 
 [[package]]
 category = "main"
@@ -753,6 +846,17 @@ version = "4.12.0"
 [package.dependencies]
 retrying = ">=1.3.3"
 six = "*"
+
+[[package]]
+category = "main"
+description = "plugin and hook calling mechanisms for python"
+name = "pluggy"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
+version = "0.13.1"
+
+[package.extras]
+dev = ["pre-commit", "tox"]
 
 [[package]]
 category = "main"
@@ -880,6 +984,14 @@ name = "pywinpty"
 optional = false
 python-versions = "*"
 version = "0.5.7"
+
+[[package]]
+category = "main"
+description = "YAML parser and emitter for Python"
+name = "pyyaml"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
+version = "5.3.1"
 
 [[package]]
 category = "main"
@@ -1019,6 +1131,25 @@ version = "1.15.0"
 
 [[package]]
 category = "main"
+description = "Modular SQL Linting for Humans"
+name = "sqlfluff"
+optional = false
+python-versions = ">=3.5"
+version = "0.3.6"
+
+[package.dependencies]
+Jinja2 = "*"
+appdirs = "*"
+bench-it = "*"
+click = ">=2.0"
+colorama = ">=0.3"
+configparser = "*"
+diff-cover = ">=2.5.0,<3.0"
+oyaml = "*"
+pathspec = "*"
+
+[[package]]
+category = "main"
 description = "Tornado websocket backend for the Xterm.js Javascript terminal emulator library."
 name = "terminado"
 optional = false
@@ -1120,7 +1251,7 @@ version = "3.5.1"
 notebook = ">=4.4.1"
 
 [metadata]
-content-hash = "7f26e99517a89e945d84cf65f0f5428b6270bd803b9f97c52ee903863fa08524"
+content-hash = "1cf25b5a71bbc83b4551329917969b2182041896d2f7a8389ebee655832e0d53"
 python-versions = "^3.8"
 
 [metadata.files]
@@ -1139,6 +1270,10 @@ altair-saver = [
 altair-viewer = [
     {file = "altair_viewer-0.3.0-py3-none-any.whl", hash = "sha256:5e290c472b70f14b5c943d464b96ca78c7131bb5f515cdb8b031e0d0722267e5"},
     {file = "altair_viewer-0.3.0.tar.gz", hash = "sha256:2964dbde6b7c5be723ddd9d509db4de67c9fb4c765d4e864087dc931c4524439"},
+]
+appdirs = [
+    {file = "appdirs-1.4.4-py2.py3-none-any.whl", hash = "sha256:a841dacd6b99318a741b166adb07e19ee71a274450e68237b4650ca1055ab128"},
+    {file = "appdirs-1.4.4.tar.gz", hash = "sha256:7d5d0167b2b1ba821647616af46a749d1c653740dd0d2415100fe26e27afdf41"},
 ]
 appnope = [
     {file = "appnope-0.1.0-py2.py3-none-any.whl", hash = "sha256:5b26757dc6f79a3b7dc9fab95359328d5747fcb2409d331ea66d0272b90ab2a0"},
@@ -1173,6 +1308,10 @@ attrs = [
 backcall = [
     {file = "backcall-0.2.0-py2.py3-none-any.whl", hash = "sha256:fbbce6a29f263178a1f7915c1940bde0ec2b2a967566fe1c65c1dfb7422bd255"},
     {file = "backcall-0.2.0.tar.gz", hash = "sha256:5cbdbf27be5e7cfadb448baf0aa95508f91f2bbc6c6437cd9cd06e2a4c215e1e"},
+]
+bench-it = [
+    {file = "bench-it-1.0.1.tar.gz", hash = "sha256:2e14c4b72df01d2470fa73200c03c3283b4a5f53d257a728af8e4adbde76d36c"},
+    {file = "bench_it-1.0.1-py2.py3-none-any.whl", hash = "sha256:d7f588f99de025735f00e24c8bc56b32da0a86f2e9fa6fe97befaa878cca2a46"},
 ]
 bleach = [
     {file = "bleach-3.2.1-py2.py3-none-any.whl", hash = "sha256:9f8ccbeb6183c6e6cddea37592dfb0167485c1e3b13b3363bc325aa8bda3adbd"},
@@ -1224,9 +1363,17 @@ chardet = [
     {file = "chardet-3.0.4-py2.py3-none-any.whl", hash = "sha256:fc323ffcaeaed0e0a02bf4d117757b98aed530d9ed4531e3e15460124c106691"},
     {file = "chardet-3.0.4.tar.gz", hash = "sha256:84ab92ed1c4d4f16916e05906b6b75a6c0fb5db821cc65e70cbd64a3e2a5eaae"},
 ]
+click = [
+    {file = "click-7.1.2-py2.py3-none-any.whl", hash = "sha256:dacca89f4bfadd5de3d7489b7c8a566eee0d3676333fbb50030263894c38c0dc"},
+    {file = "click-7.1.2.tar.gz", hash = "sha256:d2b5255c7c6349bc1bd1e59e08cd12acbbd63ce649f2588755783aa94dfb6b1a"},
+]
 colorama = [
     {file = "colorama-0.4.4-py2.py3-none-any.whl", hash = "sha256:9f47eda37229f68eee03b24b9748937c7dc3868f906e8ba69fbcbdd3bc5dc3e2"},
     {file = "colorama-0.4.4.tar.gz", hash = "sha256:5941b2b48a20143d2267e95b1c2a7603ce057ee39fd88e7329b0c292aa16869b"},
+]
+configparser = [
+    {file = "configparser-5.0.1-py3-none-any.whl", hash = "sha256:08e8a59ef1817ac4ed810bb8e17d049566dd6e024e7566f6285c756db2bb4ff8"},
+    {file = "configparser-5.0.1.tar.gz", hash = "sha256:005c3b102c96f4be9b8f40dafbd4997db003d07d1caa19f37808be8031475f2a"},
 ]
 cycler = [
     {file = "cycler-0.10.0-py2.py3-none-any.whl", hash = "sha256:1d8a5ae1ff6c5cf9b93e8811e581232ad8920aeec647c37316ceac982b08cb2d"},
@@ -1240,6 +1387,10 @@ defusedxml = [
     {file = "defusedxml-0.6.0-py2.py3-none-any.whl", hash = "sha256:6687150770438374ab581bb7a1b327a847dd9c5749e396102de3fad4e8a3ef93"},
     {file = "defusedxml-0.6.0.tar.gz", hash = "sha256:f684034d135af4c6cbb949b8a4d2ed61634515257a67299e5f940fbaa34377f5"},
 ]
+diff-cover = [
+    {file = "diff_cover-2.6.1-py2.py3-none-any.whl", hash = "sha256:ec5121ca68c705149493768af3420ba830d3c0a42a434c734803c0e7f3bcadec"},
+    {file = "diff_cover-2.6.1.tar.gz", hash = "sha256:9f1e40048d8dce156265e85a432c7fcb56ed2dc86a03f5cde5aaa48cdda4de28"},
+]
 entrypoints = [
     {file = "entrypoints-0.3-py2.py3-none-any.whl", hash = "sha256:589f874b313739ad35be6e0cd7efde2a4e9b6fea91edcc34e58ecbb8dbe56d19"},
     {file = "entrypoints-0.3.tar.gz", hash = "sha256:c70dd71abe5a8c85e55e12c19bd91ccfeec11a6e99044204511f9ed547d48451"},
@@ -1251,6 +1402,10 @@ graphviz = [
 idna = [
     {file = "idna-2.10-py2.py3-none-any.whl", hash = "sha256:b97d804b1e9b523befed77c48dacec60e6dcb0b5391d57af6a65a312a90648c0"},
     {file = "idna-2.10.tar.gz", hash = "sha256:b307872f855b18632ce0c21c5e45be78c0ea7ae4c15c828c20788b26921eb3f6"},
+]
+inflect = [
+    {file = "inflect-5.0.2-py3-none-any.whl", hash = "sha256:f125f678288f4830f0ee4a4f51e088ff869ac44451a5717627a4ed38d734144c"},
+    {file = "inflect-5.0.2.tar.gz", hash = "sha256:d284c905414fe37c050734c8600fe170adfb98ba40f72fc66fed393f5b8d5ea0"},
 ]
 ipykernel = [
     {file = "ipykernel-5.3.4-py3-none-any.whl", hash = "sha256:d6fbba26dba3cebd411382bc484f7bc2caa98427ae0ddb4ab37fe8bfeb5c7dd3"},
@@ -1275,6 +1430,10 @@ jedi = [
 jinja2 = [
     {file = "Jinja2-2.11.2-py2.py3-none-any.whl", hash = "sha256:f0a4641d3cf955324a89c04f3d94663aa4d638abe8f733ecd3582848e1c37035"},
     {file = "Jinja2-2.11.2.tar.gz", hash = "sha256:89aab215427ef59c34ad58735269eb58b1a5808103067f7bb9d5836c651b3bb0"},
+]
+jinja2-pluralize = [
+    {file = "jinja2_pluralize-0.3.0-py2.py3-none-any.whl", hash = "sha256:4fec874a591014774d4c66cb7f65314390731bfc57db4c27119db61aa93b2bc4"},
+    {file = "jinja2_pluralize-0.3.0.tar.gz", hash = "sha256:df5c2d5017b9b54c0a66cb790cca9fc08945837c3dbfc323589203f1ffb73c1c"},
 ]
 joblib = [
     {file = "joblib-0.17.0-py3-none-any.whl", hash = "sha256:698c311779f347cf6b7e6b8a39bb682277b8ee4aba8cf9507bc0cf4cd4737b72"},
@@ -1449,6 +1608,10 @@ numpy = [
     {file = "numpy-1.19.2-pp36-pypy36_pp73-manylinux2010_x86_64.whl", hash = "sha256:0bfd85053d1e9f60234f28f63d4a5147ada7f432943c113a11afcf3e65d9d4c8"},
     {file = "numpy-1.19.2.zip", hash = "sha256:0d310730e1e793527065ad7dde736197b705d0e4c9999775f212b03c44a8484c"},
 ]
+oyaml = [
+    {file = "oyaml-1.0-py2.py3-none-any.whl", hash = "sha256:3a378747b7fb2425533d1ce41962d6921cda075d46bb480a158d45242d156323"},
+    {file = "oyaml-1.0.tar.gz", hash = "sha256:ed8fc096811f4763e1907dce29c35895d6d5936c4d0400fe843a91133d4744ed"},
+]
 packaging = [
     {file = "packaging-20.4-py2.py3-none-any.whl", hash = "sha256:998416ba6962ae7fbd6596850b80e17859a5753ba17c32284f67bfff33784181"},
     {file = "packaging-20.4.tar.gz", hash = "sha256:4357f74f47b9c12db93624a82154e9b120fa8293699949152b22065d556079f8"},
@@ -1480,6 +1643,10 @@ pandocfilters = [
 parso = [
     {file = "parso-0.7.1-py2.py3-none-any.whl", hash = "sha256:97218d9159b2520ff45eb78028ba8b50d2bc61dcc062a9682666f2dc4bd331ea"},
     {file = "parso-0.7.1.tar.gz", hash = "sha256:caba44724b994a8a5e086460bb212abc5a8bc46951bf4a9a1210745953622eb9"},
+]
+pathspec = [
+    {file = "pathspec-0.8.1-py2.py3-none-any.whl", hash = "sha256:aa0cb481c4041bf52ffa7b0d8fa6cd3e88a2ca4879c533c9153882ee2556790d"},
+    {file = "pathspec-0.8.1.tar.gz", hash = "sha256:86379d6b86d75816baba717e64b1a3a3469deb93bb76d613c9ce79edc5cb68fd"},
 ]
 patsy = [
     {file = "patsy-0.5.1-py2.py3-none-any.whl", hash = "sha256:5465be1c0e670c3a965355ec09e9a502bf2c4cbe4875e8528b0221190a8a5d40"},
@@ -1549,6 +1716,10 @@ pillow = [
 plotly = [
     {file = "plotly-4.12.0-py2.py3-none-any.whl", hash = "sha256:c50babbb4f8ad12e2a4f004df5d80c1dbf10c38e9325b5ffb1146b383687ef52"},
     {file = "plotly-4.12.0.tar.gz", hash = "sha256:9ec2c9f4cceac7c595ebb77c98cbeb6566a97bef777508584d9bb7d9bcb8854c"},
+]
+pluggy = [
+    {file = "pluggy-0.13.1-py2.py3-none-any.whl", hash = "sha256:966c145cd83c96502c3c3868f50408687b38434af77734af1e9ca461a4081d2d"},
+    {file = "pluggy-0.13.1.tar.gz", hash = "sha256:15b2acde666561e1298d71b523007ed7364de07029219b604cf808bfa1c765b0"},
 ]
 portpicker = [
     {file = "portpicker-1.3.1.tar.gz", hash = "sha256:d2cdc776873635ed421315c4d22e63280042456bbfa07397817e687b142b9667"},
@@ -1620,6 +1791,21 @@ pywinpty = [
     {file = "pywinpty-0.5.7-cp37-cp37m-win_amd64.whl", hash = "sha256:dd22c8efacf600730abe4a46c1388355ce0d4ab75dc79b15d23a7bd87bf05b48"},
     {file = "pywinpty-0.5.7-cp38-cp38-win_amd64.whl", hash = "sha256:8fc5019ff3efb4f13708bd3b5ad327589c1a554cb516d792527361525a7cb78c"},
     {file = "pywinpty-0.5.7.tar.gz", hash = "sha256:2d7e9c881638a72ffdca3f5417dd1563b60f603e1b43e5895674c2a1b01f95a0"},
+]
+pyyaml = [
+    {file = "PyYAML-5.3.1-cp27-cp27m-win32.whl", hash = "sha256:74809a57b329d6cc0fdccee6318f44b9b8649961fa73144a98735b0aaf029f1f"},
+    {file = "PyYAML-5.3.1-cp27-cp27m-win_amd64.whl", hash = "sha256:240097ff019d7c70a4922b6869d8a86407758333f02203e0fc6ff79c5dcede76"},
+    {file = "PyYAML-5.3.1-cp35-cp35m-win32.whl", hash = "sha256:4f4b913ca1a7319b33cfb1369e91e50354d6f07a135f3b901aca02aa95940bd2"},
+    {file = "PyYAML-5.3.1-cp35-cp35m-win_amd64.whl", hash = "sha256:cc8955cfbfc7a115fa81d85284ee61147059a753344bc51098f3ccd69b0d7e0c"},
+    {file = "PyYAML-5.3.1-cp36-cp36m-win32.whl", hash = "sha256:7739fc0fa8205b3ee8808aea45e968bc90082c10aef6ea95e855e10abf4a37b2"},
+    {file = "PyYAML-5.3.1-cp36-cp36m-win_amd64.whl", hash = "sha256:69f00dca373f240f842b2931fb2c7e14ddbacd1397d57157a9b005a6a9942648"},
+    {file = "PyYAML-5.3.1-cp37-cp37m-win32.whl", hash = "sha256:d13155f591e6fcc1ec3b30685d50bf0711574e2c0dfffd7644babf8b5102ca1a"},
+    {file = "PyYAML-5.3.1-cp37-cp37m-win_amd64.whl", hash = "sha256:73f099454b799e05e5ab51423c7bcf361c58d3206fa7b0d555426b1f4d9a3eaf"},
+    {file = "PyYAML-5.3.1-cp38-cp38-win32.whl", hash = "sha256:06a0d7ba600ce0b2d2fe2e78453a470b5a6e000a985dd4a4e54e436cc36b0e97"},
+    {file = "PyYAML-5.3.1-cp38-cp38-win_amd64.whl", hash = "sha256:95f71d2af0ff4227885f7a6605c37fd53d3a106fcab511b8860ecca9fcf400ee"},
+    {file = "PyYAML-5.3.1-cp39-cp39-win32.whl", hash = "sha256:ad9c67312c84def58f3c04504727ca879cb0013b2517c85a9a253f0cb6380c0a"},
+    {file = "PyYAML-5.3.1-cp39-cp39-win_amd64.whl", hash = "sha256:6034f55dab5fea9e53f436aa68fa3ace2634918e8b5994d82f3621c04ff5ed2e"},
+    {file = "PyYAML-5.3.1.tar.gz", hash = "sha256:b8eac752c5e14d3eca0e6dd9199cd627518cb5ec06add0de9d32baeee6fe645d"},
 ]
 pyzmq = [
     {file = "pyzmq-19.0.2-cp27-cp27m-macosx_10_9_intel.whl", hash = "sha256:59f1e54627483dcf61c663941d94c4af9bf4163aec334171686cdaee67974fe5"},
@@ -1724,6 +1910,9 @@ send2trash = [
 six = [
     {file = "six-1.15.0-py2.py3-none-any.whl", hash = "sha256:8b74bedcbbbaca38ff6d7491d76f2b06b3592611af620f8426e82dddb04a5ced"},
     {file = "six-1.15.0.tar.gz", hash = "sha256:30639c035cdb23534cd4aa2dd52c3bf48f06e5f4a941509c8bafd8ce11080259"},
+]
+sqlfluff = [
+    {file = "sqlfluff-0.3.6.tar.gz", hash = "sha256:3c19ccaa42d0b323b5a8b00c50d1383887236f100263e4a437d2f9a85da25e04"},
 ]
 terminado = [
     {file = "terminado-0.9.1-py3-none-any.whl", hash = "sha256:c55f025beb06c2e2669f7ba5a04f47bb3304c30c05842d4981d8f0fc9ab3b4e3"},

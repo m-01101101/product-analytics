@@ -21,6 +21,7 @@ pydotplus = "^2.0.2"
 six = "^1.15.0"
 altair_saver = "^0.5.0"
 missingno = "^0.4.2"
+sqlfluff = "^0.3.6"
 
 [tool.poetry.dev-dependencies]
 

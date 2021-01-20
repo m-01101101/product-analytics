@@ -13,26 +13,29 @@ from rich import print
 
 columns = ["created_at", "id"]
 tic = dt.datetime.now()
-_df = pd.read_csv("../cleo_example/data/cleo_users.csv", usecols=columns, low_memory=False)
-print(f"""time to read csv: {str(dt.datetime.now() - tic)}\n
+_df = pd.read_csv(
+    "../cleo_example/data/cleo_users.csv", usecols=columns, low_memory=False
+)
+print(
+    f"""time to read csv: {str(dt.datetime.now() - tic)}\n
 shape: {_df.shape}
-""")
+"""
+)
 
 _df_tidy = _df.copy()
-_df_tidy = _df_tidy.drop_duplicates(keep='last')
-_df_tidy["date"] = pd.to_datetime(_df_tidy.created_at, format='%Y-%m-%d')
+_df_tidy = _df_tidy.drop_duplicates(keep="last")
+_df_tidy["date"] = pd.to_datetime(_df_tidy.created_at, format="%Y-%m-%d")
 
 assert _df_tidy.id.nunique() == _df_tidy.shape[0]
 
-df = _df_tidy.groupby("date").agg(
-    daily_sign_ups=("id", "nunique")
-).reset_index()
+df = _df_tidy.groupby("date").agg(daily_sign_ups=("id", "nunique")).reset_index()
 
 df.sort_values(by="date", inplace=True)
 # df.set_index('date', inplace=True)
 # df.sort_index(inplace=True)
 
 print(f"working dataset for prohpet:\n{df.head()}\n")
+
 
 def plot_line(df: pd.DataFrame, x_axis: str, line: str, c: str = "b"):
     x = df[x_axis]
@@ -48,13 +51,10 @@ def plot_line(df: pd.DataFrame, x_axis: str, line: str, c: str = "b"):
     ax.set_ylabel(f"{line}")
     ax.set_xlabel(f"{x}")
     # ax.set_xticklabels(x, rotation=-40)
-
-    plt.show();
     return
 
-## 
-plot_line(df, df.columns[0], df.columns[1])
 
+# plot_line(df, "date", "daily_sign_ups")
 
 """
 box-Cox transforms are data transformations that evaluate a set of lambda coefficients (λ) 
@@ -69,9 +69,19 @@ and will return it as the second output argument
 """
 
 # Apply Box-Cox Transform to value column and assign to new column y
-df['y'], lam = boxcox(df.daily_sign_ups)
+df["y"], lam = boxcox(df.daily_sign_ups)
 
-plot_line(df, "date", "y", "green")
+
+# plot daily signups and boxcox transformation
+fig = plt.figure(dpi=300, figsize=(6, 4))
+ax1 = plt.subplot(311)
+plt.plot(df.date, df.daily_sign_ups, "b")
+plt.setp(ax1.get_xticklabels(), fontsize=6)
+ax2 = plt.subplot(312, sharex=ax1)  # share x only
+plt.plot(df.date, df.y, "g")
+plt.setp(ax2.get_xticklabels(), visible=False)  # make these tick labels invisible
+plt.show()
+
 
 # instantiating (create an instance of) a Prophet object
 m = Prophet()
@@ -106,6 +116,8 @@ we have the λ value from in the "lam variable" from our Box-Cox transformation
 """
 
 # transformaing forecasted values back to their original units
-forecast[['yhat','yhat_upper','yhat_lower']] = forecast[['yhat','yhat_upper','yhat_lower']].apply(lambda x: inv_boxcox(x, lam))
+forecast[["yhat", "yhat_upper", "yhat_lower"]] = forecast[
+    ["yhat", "yhat_upper", "yhat_lower"]
+].apply(lambda x: inv_boxcox(x, lam))
 print(f"\nplotting fbprobhet forecast for 6 months in original units\n")
 m.plot(forecast)

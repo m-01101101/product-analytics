@@ -25,6 +25,7 @@ sqlfluff = "^0.3.6"
 requests = "^2.25.1"
 fbprophet = "^0.7.1"
 rich = "^9.8.2"
+postgres = "^3.0.0"
 
 [tool.poetry.dev-dependencies]
 

@@ -32,7 +32,7 @@ class ChurnSimulation:
         self.start_date = start
         self.end_date = end
         self.init_customers = init_customers
-        self.monthly_growth_rate = 0.1
+        self.monthly_growth_rate = 0.12
 
         self.util_mod = UtilityModel(self.model_name)
         behavior_versions = glob.glob("../conf/" + self.model_name + "_*.csv")
@@ -296,8 +296,8 @@ if __name__ == "__main__":
         model_name = sys.argv[1]
 
     start = date(2020, 1, 1)
-    end = date(2020, 6, 1)
-    init = 10000
+    end = date(2020, 9, 1)
+    init = 20000
 
     random_seed = None
     if random_seed is not None:

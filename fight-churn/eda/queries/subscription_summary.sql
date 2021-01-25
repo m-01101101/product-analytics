@@ -8,9 +8,10 @@ with base as (
   group by 1
 )
 
-select 
+select distinct
 	subscriptions
     , round(count(account_id) over(partition by subscriptions)*1.0
     	/ count(account_id) over()
     	, 3) pc
 from base
+order by 1

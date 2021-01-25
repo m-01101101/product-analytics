@@ -54,6 +54,8 @@ order by 2 desc
 
 TODO create markdown table or rich print output of query
 
+<img src="md_refs/eda_events_overview.png">
+
 Summary of subscription data;
 
 ```SQL
@@ -74,3 +76,7 @@ select
         , 3) pc
 from base
 ```
+
+~16% of customers subscribed for a single month, ~32% of customers subscribed for 8 months;
+
+<img src="md_refs/eda_subs_overview.png" height=200>

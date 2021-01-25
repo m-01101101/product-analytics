@@ -33,50 +33,14 @@ Created 20000 initial customers with 135109 subscriptions for start date 2020-01
 
 We'll now have `event` data and `subscription` data.
 
-Summary of event data;
-
-```SQL
-with base as (
-  select 
-      event_type_name
-      , count(*) event_count
-      , count(distinct account_id) unique_users
-  from socialnet7.event
-  join socialnet7.event_type using(event_type_id)
-  group by 1
-)
-
-select *
-    , round(event_count*1.0 / unique_users, 3) avg_time_performed_per_user 
-from base
-order by 2 desc
-```
-
-TODO create markdown table or rich print output of query
+All queries can be found in the `eda/queries` folder [[here](eda/queries)]
 
 <img src="md_refs/eda_events_overview.png">
 
-Summary of subscription data;
-
-```SQL
-with base as (
-  select 
-      account_id
-      , count(*) subscriptions
-      , min(start_date) first_subscription
-      , max(start_date) last_subscription
-  from socialnet7.subscription
-  group by 1
-)
-
-select 
-    subscriptions
-    , round(count(account_id) over(partition by subscriptions)*1.0
-        / count(account_id) over()
-        , 3) pc
-from base
-```
-
 ~16% of customers subscribed for a single month, ~32% of customers subscribed for 8 months;
 
-<img src="md_refs/eda_subs_overview.png" height=200>
+<img src="md_refs/eda_subs_overview.png">
+
+There's no view of a "resurrected" user in the data. Equally, as dealing with a social network, upgrades and downgrades in subscriptions are not relevant.
+
+<img src="md_refs/nrr.png">

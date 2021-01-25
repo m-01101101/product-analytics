@@ -13,3 +13,19 @@ The data is created through a simulation. A `Customer` class is created, each cu
 Though this all sounds a bit "economic man", something that couldn't possibly reflect reality, the result is behaviour that looks pretty realistic. On an aggregate level it does a good job and providing data that will look familiar out in the wild.
 
 It is worth investigating the `customer`, `behavior` and `utility` modules to understand the underlying assumptions of the "people" being modelled in more detail.
+
+## Defining retention and churn
+
+Both Carl and [Johnathan Hsu](https://tribecap.co/a-quantitative-approach-to-product-market-fit/) focus on describing retention first in terms of revenue. This takes into account not only customers churning but the amount of revenue you get from existing customers (ie are retained customers spending more, or upgrading to premium plans?)
+
+The net retention rate (NRR) is the proportion of revenue received at the end of the period from existing customers only
+
+> Net retention $NRR$ = (retained(t) + expansion(t) - churned(t) - contraction(t)) / revenue(t-1)
+>
+> Net churn = 1 - NRR
+
+Gross retention does not include the filter of only using customers present in the previous time period. It looks only at the aggregate revenue numbers;
+
+> Gross retention = revenue(t) / revenue(t-1)
+>
+> Gross churn = 1 - gross retention rate

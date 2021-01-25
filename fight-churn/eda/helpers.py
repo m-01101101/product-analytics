@@ -7,7 +7,7 @@ from typing import Dict
 
 
 def connect_db():
-    DB_NAME = os.environ["CHURN_DB"],
+    DB_NAME = os.environ["CHURN_DB"]
     USERNAME = os.environ["CHURN_DB_USER"]
     PASSWORD = os.environ["CHURN_DB_PASS"]
 

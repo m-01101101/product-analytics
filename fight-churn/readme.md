@@ -4,7 +4,7 @@ This repo is based on the excellent book "fight churn with data" [website](https
 
 <img src="md_refs/covertitle.png" width=200>
 
-_Do note, I have not copied the repo exactly and have made a few changes to the code_. 
+_Do note, I have not copied the repo but rather built my own from scratch using a similar simulation and framework_.
 
 ## Thinking about customer behaviour
 
@@ -16,11 +16,11 @@ It is worth investigating the `customer`, `behavior` and `utility` modules to un
 
 ## Defining retention and churn
 
-Both Carl and [Johnathan Hsu](https://tribecap.co/a-quantitative-approach-to-product-market-fit/) focus on describing retention first in terms of revenue. This takes into account not only customers churning but the amount of revenue you get from existing customers (ie are retained customers spending more, or upgrading to premium plans?)
+Both Carl and [Johnathan Hsu](https://tribecap.co/a-quantitative-approach-to-product-market-fit/) focus on describing retention first in terms of revenue. This takes into account not only customers churning but the amount of revenue you get from existing customers (ie are retained customers spending more, or upgrading to premium plans?). Up-selling existing customers (increasing incremental revenue) can therefore make churn seem lower than it is as a user level.
 
 The net retention rate (NRR) is the proportion of revenue received at the end of the period from existing customers only
 
-> Net retention $NRR$ = (retained(t) + expansion(t) - churned(t) - contraction(t)) / revenue(t-1)
+> Net retention rate $NRR$ = (retained(t) + expansion(t) - churned(t) - contraction(t)) / revenue(t-1)
 >
 > Net churn = 1 - NRR
 
@@ -29,3 +29,7 @@ Gross retention does not include the filter of only using customers present in t
 > Gross retention = revenue(t) / revenue(t-1)
 >
 > Gross churn = 1 - gross retention rate
+
+It's beneficial to calculate these same measures but counting customers rather than summing revenue. This will cancel out the expansion or contraction (up-sells / down-sells) of retained customers.
+
+If there is wide variation in the price customers pay (in B2B different tiers may be extremely different prices), or the revenue is heavily skewed (some people pay a lot, most very little), then it's useful to apply a log transformation to the revenue numbers to decrease the noise in `expansion` and `contraction` of retained users.

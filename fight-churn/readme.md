@@ -32,4 +32,14 @@ Gross retention does not include the filter of only using customers present in t
 
 It's beneficial to calculate these same measures but counting customers rather than summing revenue. This will cancel out the expansion or contraction (up-sells / down-sells) of retained customers.
 
-If there is wide variation in the price customers pay (in B2B different tiers may be extremely different prices), or the revenue is heavily skewed (some people pay a lot, most very little), then it's useful to apply a log transformation to the revenue numbers to decrease the noise in `expansion` and `contraction` of retained users.
+If there is wide variation in the price customers pay (in B2B different tiers may be extremely different prices), or the revenue is heavily skewed (some people pay a lot, most very little), then it's useful to apply a log transformation to the revenue numbers to decrease the noise in `expansion` and `contraction` of retained users. Modelling the data at a user level weights each user differently regardless of what they are paying you. Using these two in tandem will help improve your understanding of "what's going on".
+
+**Revenue churn** is calculation that ignores up-sells and focuses explicitly on revenue value of churned and down-sells;
+
+> Revenue churn = (churn(t) $ + down-sell(t) $) / revenue(t-1)
+
+**Gold's law of churn**, big customers churn less
+
+**Activity churn** is calculated on people's usage of the product. You need a definition of what constitutes someone being active. 
+    - We need this definition to be as universal as possible. For example, if FB had deemed active as someone performing a "like" the metric of MAU would have suffered from a large bias in participation rates, as a result it is simply someone opening the app for a certain time period
+We also need to define a window of inactivity. Typically 28 days or just a single month is the way to go.

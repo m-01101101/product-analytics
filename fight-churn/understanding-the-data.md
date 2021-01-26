@@ -44,3 +44,15 @@ All queries can be found in the `eda/queries` folder [[here](eda/queries)]
 There's no view of a "resurrected" user in the data. Equally, as dealing with a social network, upgrades and downgrades in subscriptions are not relevant.
 
 <img src="md_refs/nrr.png">
+
+Plotting a simple growth accounting chart doesn't show us much as retention rate is higher and growth is slow, but this is a toy example.
+
+<img src="md_refs/eda_simple_ga.png">
+
+Plotting cohort retention based on monthly activity. A user is considered retained is they perform any `event` within a calendar month (would be better to use a 28 day window when doing this analysis on a "real" dataset).
+
+<img src="md_refs/eda_cohort1.png">
+
+Same data visulaised as a heatmap;
+
+<img src="md_refs/eda_cohort2.png">

@@ -29,6 +29,6 @@ group by 1
 )
 
 select *
-    , (acquired_users + retained_users)*1.0 / churned_users as quick_ratio
+    , round((acquired_users + retained_users)*1.0 / nullif(abs(churned_users), 0), 3) as quick_ratio
 from aggregation
 order by 1

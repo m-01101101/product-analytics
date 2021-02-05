@@ -48,7 +48,7 @@ As the boundary gets smoother, the model is less complex, less suspectible to "n
 
 __Accuracy__ = correction predictions / total data points (using unseen data only!!)
 
-### Regression
+### Linear Regression
 
 In regression tasks the target variable is a continuously varying variable, i.e. not `0` or `1` but rather a point on a curve, for example the price of a house, a country's GDP, or a bike share company using time and weather data to predict the number of bikes being rented at any given hour.
 
@@ -116,4 +116,181 @@ Lasso regression can be used to select important features of a dataset. It shrin
 >
 > If instead you took the sum of the squared values of the coefficients multiplied by some alpha - like in Ridge regression - you would be computing the $L2$ norm.
 
+There is another type of regularised regression known as `the elastic net`. In elastic net regularisation, the penalty term is a linear combination of the $L1$ and $L2$ penalties;
+
+$$a * L1 + b * L2$$
+
+In scikit-learn, this term is represented by the `l1_ratio`
+
+> An `l1_ratio` of 1 corresponds to an L1 penalty, and anything lower is a combination of L1 and L2.
+
 ### Measuring model performance
+
+Accuracy alone is not a suitable measure for understanding how well a model is performing. For example, if 99% of emails are good, and 1% are spam, a model that clasifies all emails as good is 99% accurate but will never catch any spam. This is a very common problem.
+
+To overcome this we use a confusion matrix;
+
+<img src="md_refs/confusion-matrix.jpg"><br>
+
+- Sensitivity also known as recall, hit-rate, or true positive rate
+- F1 score, conveys the balance between the precision and the recall (the harmonic mean):
+$$2 \times \frac{precision * recall}{precision + recall}$$
+
+### Logistic regression
+
+Logisitic regression is used in binary classification problems, i.e. something is a 0 or 1.
+
+Logistic regression has a regularisation parameter $C$. It controls the inverse of the regularisation strength. Additionally, logistic regression has a 'penalty' hyperparameter which specifies whether to use 'l1' or 'l2' regularisation.
+
+Given one feature, logistic regression will provide a probability $p$, with respect to the target variable;
+
+- if $p$ is > 0.5 we label the data as 1
+- if $p$ is less than 0.5 we label the data as 0
+
+Logistic regression produces a "linear decision boundary"
+
+<img src="md_refs/logreg1.png">
+
+0.5 is the default, but we can define this threshold. Varying this threshold will impact our true positive and false positive rate. At 0, the model predicts everything as `1`, a threshold of 1 will predict everything as `0`.
+
+Varying the the threshold will impact these rates. We're trying to hit the sweet spot, that with the "best" trade-off on the __receiver operating characteristic curve__ or ROC curve.
+
+<img src="md_refs/roccurve1.png">
+
+__The larger the area under the ROC curve, the better the model__. AUC (area under the curve) would be perfect if we had a TPR of 1 and a FPR of 0 (top left corner).
+
+The AUC should also be considered when performing cross-validation.
+
+Additionally, we can plot the `precision-recall curve` for different thresholds.
+
+$$ Precision = \frac{TP}{TP + FP}$$
+$$ Recall = \frac{TP}{TP + FN}$$
+
+<img src="md_refs/precision-recall.png">
+
+- A recall of 1 corresponds to a classifier with a low threshold,
+  - classifying everything as 1,
+  - though at the expense of many mis-classifications of those who should have been classified as 0
+- When the threshold is very close to 1, precision is also 1, because the classifier is absolutely certain about its predictions
+  - Precision is undefined for a classifier which makes no positive predictions, that is, classifies everyone as `0`
+
+### Hyperparameter tuning
+
+> Parameters, ones that need to be specified before fitting a model, are called hyperparameters. In other words, these are parameters that cannot be explicitly learned by fitting the model. 
+
+<img src="md_refs/hyperparameter1.png">
+
+Hyperparameter tuning is the process of;
+
+- trying a number a hyperparameter values
+- fit all of them separately
+- see how well each performs
+- choose the best performing one
+
+"Best" is a result of the trade-offs you are willing to make. Both in terms of computation and model performance.
+
+It's important to not only use cross-validation but also with holding a proportion of the dataset entirely in order to avoid overfitting.
+
+There are typically two approaches we tuning hyperparameter values (1) grid search, (2) random search.
+
+If we had two hyperparameters, $C$ and $aplha \alpha$ then our grid would look like this;
+
+<img src="md_refs/hyperparameter2.png">
+
+```Python
+from sklearn.model_selection import GridSearchCV
+from sklearn.neighbors import KNeighborsClassifier
+
+"""
+the keys are the hyperparameter names, 
+such as n neighbors in KNN or alpha in lasso regression
+the values are lists containing the values we wish to tune the relevant hyperparameter or hyperparameters over
+"""
+param_grid = {"n_neighbors": np.arange(1, 50)}
+
+knn = KNeighborsClassifier()
+knn_cv = GridSearchCV(knn, param_grid, cv=5)  # returns a grid search object
+knn_cv.fit(X, y)  # performs the grid search inplace
+
+print(f"""Best hyperparameter: {knn_cv.best_params_}
+Best score: {knn_cv.best_score_} - this is the mean cross-validation score over the fold
+""")
+```
+
+> GridSearchCV can be computationally expensive, especially if you are searching over a large hyperparameter space and dealing with multiple hyperparameters. A solution to this is to use RandomizedSearchCV, in which not all hyperparameter values are tried out. Instead, a fixed number of hyperparameter settings is sampled from specified probability distributions.
+
+```Python
+from scipy.stats import randint
+from sklearn.model_selection import RandomizedSearchCV
+from sklearn.tree import DecisionTreeClassifier
+
+tree = DecisionTreeClassifier()
+
+param_dist = {"max_depth": [3, None],
+              "max_features": randint(1, 9),
+              "min_samples_leaf": randint(1, 9),
+              "criterion": ["gini", "entropy"]}
+
+tree_cv = RandomizedSearchCV(tree, param_dist, cv=5)
+tree_cv.fit(X, y)
+
+print(f"""Tuned Decision Tree Parameters: {tree_cv.best_params_}
+Best score is {tree_cv.best_score_}""")
+```
+
+### Hold-outs
+
+Split your data before you even do exploratory analysis.
+
+Use the hold-out set, which has not been used at all, to test how well the model can be expected to perform on a dataset that it has never seen before.
+
+<img src="md_refs/holdout.png">
+
+```Python
+# hold out for logistic regression
+import numpy as np
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import GridSearchCV
+
+# Create the hyperparameter grid
+c_space = np.logspace(-5, 8, 15)
+param_grid = {"C": c_space, "penalty": ['l1', 'l2']}
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.4, random_state=42)
+
+logreg = LogisticRegression()
+logreg_cv = GridSearchCV(logreg, param_grid, cv=5)
+logreg_cv.fit(X_train, y_train)
+
+print(f"""Tuned Logistic Regression Parameter: {logreg_cv.best_params_}
+Tuned Logistic Regression Accuracy: {logreg_cv.best_score_}""")
+```
+
+```Python
+# hold out for linear regression
+from sklearn.model_selection import train_test_split, GridSearchCV
+from sklearn.linear_model import ElasticNet
+from sklearn.metrics import mean_squared_error
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.4, random_state=42)
+
+# Create the hyperparameter grid
+l1_space = np.linspace(0, 1, 30)
+param_grid = {"l1_ratio": l1_space}
+
+elastic_net = ElasticNet()
+gm_cv = GridSearchCV(elastic_net, param_grid, cv=5)
+gm_cv.fit(X_train, y_train)
+
+y_pred = gm_cv.predict(X_test)
+r2 = gm_cv.score(X_test, y_test)
+mse = mean_squared_error(y_test, y_pred)
+print("""Tuned ElasticNet l1 ratio: {gm_cv.best_params_}
+Tuned ElasticNet R squared: {r2}
+Tuned ElasticNet MSE: {mse}""")
+```
+
+****
+
+The Train-Test-Split/Instantiate/Fit/Predict paradigm applies to all classifiers and regressors - which are known in scikit-learn as 'estimators'. 

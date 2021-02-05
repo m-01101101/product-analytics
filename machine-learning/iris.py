@@ -22,6 +22,7 @@ knn = KNeighborsClassifier(n_neighbors=6)
 assert (
     iris["data"].shape[0] == iris["target"].shape[0]
 )  # same number of observations in features and target
+
 clf = knn.fit(
     iris["data"], iris["target"]
 )  # features must be continuous not categorical
@@ -38,7 +39,7 @@ assert (
     iris["data"].shape[1] == X_new.shape[1]
 )  # same number of features trained on and in new
 
-y_pred =    knn.predict(X_new)
+y_pred = knn.predict(X_new)
 
 # better approach is to test and split the data
 

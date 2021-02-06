@@ -102,6 +102,12 @@ Alpha ($\alpha$, sometimes referred to as lambda $\lambda$) is a parameter we ne
 
 When alpha = 0, we are using standard OLS, as such large coefficients are not penalised.
 
+```Python
+from sklearn.linear_model import Ridge 
+
+ridge = Ridge(alpha=0.5, normalize=True)
+```
+
 Lasso regression__, is another type of regularised regression.
 
 > our loss function is the standard OLS loss function plus the absolute value of each coefficient multiplied by some constant alpha.
@@ -293,4 +299,142 @@ Tuned ElasticNet MSE: {mse}""")
 
 ****
 
-The Train-Test-Split/Instantiate/Fit/Predict paradigm applies to all classifiers and regressors - which are known in scikit-learn as 'estimators'. 
+The Train-Test-Split/Instantiate/Fit/Predict paradigm applies to all classifiers and regressors - which are known in scikit-learn as 'estimators'.
+
+****
+
+### Preprocessing data
+
+#### Categorical data
+
+Data does not come in a tidy format which we can just plug and play.
+
+Categorical variables will need to be encoded into dummy variables.
+
+For example;
+
+<img src"md_refs/encoding.png">
+
+`scikit-learn` has the `OneHotEncoder()` function. `pandas` has `pd.get_dummies()`.
+
+When you do one-hot encoding on a categorical variable you end up with correlated features, so you should drop one of them as a "reference".
+
+> Dummy variables are correlated pairwisely, be they all k or k-1 variables. So, the better word is "statistically/informationally redundant" instead of "correlated"
+
+According to [stats.stackexchange](https://stats.stackexchange.com/questions/231285/dropping-one-of-the-columns-when-using-one-hot-encoding);
+
+- It depends on the model you want to use;
+  - With linear regression, or generalized linear models estimated by maximum likelihood (or least squares) you need to leave out one column. Otherwise you will get a message about some columns "left out because of singularities"
+  - But if you estimate such models with regularisation, for example ridge, lasso er the elastic net, then you should not leave out any columns. The regularisation takes care of the singularities, and more important, the prediction obtained may depend on which columns you leave out. That will not happen when you do not use regularisation
+
+```Python
+df_encoded = pd.get_dummies(df.some_column)
+df_encoded = pd.get_dummies(df.some_column, drop_first=True)
+```
+
+#### Missing data
+
+Missing data doesn't just mean `NULL` values, but zeros, an empty string, -1, or something else. It will require digging and an understanding of the data and how it was collected to know what represents missing data.
+
+One approach is to replace missing data will `NULL` values and then drop all rows containing `NULLS`
+
+```Python
+for col in some_list_of_col:
+  df[col].replace(0, np.nan, inplace=True)
+
+df = df.dropna()
+```
+
+This isn't very robust. We could impute data. Either replacing missing data with the mean, or a random number from the existing dataset.
+
+```Python
+from sklearn.preprocessing import Imputer
+
+imp = Imputer(missing_values="NaN", strategy="mean", axis=0
+      )  # axis 0 means impute along columns
+      # other strategies include "most_frequent"
+
+imp.fit(X)      
+X = imp.transform(X)
+```
+
+The scikit-learn pipeline object allows us to transform and fit the data in one step.
+
+```Python
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import Imputer
+
+imp = Imputer(missing_values="NaN", stratrgy="mean", axis=0)
+
+logreg = LogisticRegression()
+
+# each step is a 2-tuple 
+# containing the name you wish to give the step and the estimator
+# each step, but the last must be a transformer
+# the last must be an estimator
+steps = [("impute", imp), ("logistic_regression", logreg)]
+pipeline = Pipeline(steps)
+pipeline.fit(X_train, y_train)
+y_pred = pipeline.predict(X_test)
+pipeline.score(X_test, y_test)
+```
+
+#### Normalising
+
+Machine Learning algorithms often use some view of distance to inform them. If you have features that operate on a really large scale then these will have a greater influence on the model. We want features to be on a similar scale where possible.
+
+This process is known as normalising or "centring and scaling".
+
+Approaches to normalisation;
+
+- __standardisation;__ subtract the mean of each value and divide by the variance so all features are centred around 0 and have a variance of 1
+- subtract the minimum and divide by the range, the data will have a minimum of 0 and a max of 1
+- normalise so that the data ranges from -1 to 1
+- even changing the scale of data to a logarithm can help
+
+```Python
+from sklearn.preprocessing import scale
+from sklearn.preprocessing import StandardScaler
+
+X_scaled = scale(X)  # performs standardisation
+
+steps = [("normalise", StanardScaler()),
+        ("knn", KNeighborClassifier())
+        ]
+
+pipeline = Pipeline(steps)        
+```
+
+Cross-validation can also use a pre-processing pipeline.
+
+```Python
+steps = [("normalise", StanardScaler()),
+        ("knn", KNeighborClassifier())
+        ]
+
+pipeline = Pipeline(steps)
+
+parameters = {knn_n_neighbors: np.arange(1, 50)}
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+
+cv = GridSearchCV(pipeline, param_grid=parameters)  # cv=3 by default
+cv.fit(X_train, y_train)
+y_pred = cv.predict(X_test)  # predict on the estimator with the best found parameters on the hold-out set
+best_number_of_neighbours = cv.best_params_
+# results
+cv.score(X_test, y_test)
+classification_report(y_test, y_pred)
+```
+
+The pipeline object can clean, scale and estimate our data;
+
+```Python
+steps = [("imputation", Imputer(missing_values="NaN", strategy="mean", axis=0)),
+         ("scaler", StandardScaler()),
+         ("elasticnet", ElasticNet())
+         ]
+
+# Create the pipeline: pipeline 
+pipeline = Pipeline(steps)
+```

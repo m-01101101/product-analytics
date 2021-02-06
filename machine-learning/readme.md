@@ -313,7 +313,7 @@ Categorical variables will need to be encoded into dummy variables.
 
 For example;
 
-<img src"md_refs/encoding.png">
+<img src="md_refs/encoding.png">
 
 `scikit-learn` has the `OneHotEncoder()` function. `pandas` has `pd.get_dummies()`.
 

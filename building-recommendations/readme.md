@@ -61,3 +61,78 @@ pair_counts_df.sort_values(by="size", ascending=False, inplace=True)
 # most common books after someone has read LotR
 pair_counts_df[pair_counts_df.book_a == "Lord of the Rings"].head()
 ```
+
+## Content based recommendations
+
+Recommending items similar to items a user has liked in the past. We need a notion of similarity between items.
+
+Content based recommendations, prioritises items with similar attributes. This allows you to recommend new items, as well as leveraging a long-tail of items.
+
+Encode attributes as a vector to easily calculate distance and similarity between items;
+
+<img src="md_refs/attributes.png" width=300>
+
+```Python
+"""
+# convert
+|| title || genre ||
+| book a | genre a |
+| book a | genre b |
+| book b | genre a |
+| book b | genre c |
+
+# to 
+|| title || genre a || genre b || genre c ||
+| book a |      1   |  1       |     0    |
+| book b |      1   |  0       |     0    |
+"""
+
+df = pd.crosstab(df_books.title, df_books.genre).reset_index()
+
+df[df.index == "Lord of the Rings"]
+```
+
+### Calculating similarity
+
+The `Jaccard Similarity` is the ratio of attributes two items have in common / by the total number of combined attributes
+
+$\cap$ = intersection (overlap) between two arrays
+
+$\cup$ = union (all elements) in two arrays
+
+<img src="md_refs/jaccard.png">
+
+```Python
+# similarity between two items
+from sklearn.metrics import jaccard_score
+
+print(jaccard_score(
+    np.asarray(df_book.loc["The Hobbit"].values), 
+    np.asarray(df_book.loc["A Game of Thrones"].values)
+))
+
+# similarity between all items at once
+from scipy.spatial_distance import pdist, squareform
+
+#  pdist == pairwise distance
+jaccard_distances = pdist(df_books.values, metric="jaccard")
+
+# turns 1d array into nested-array
+# subtract values from 1 as jaccard is a measure of difference
+sq_jaccard_distances = 1 - squareform(jaccard_distances)
+
+distance_df = pd.DataFrame(sq_jaccard_distances,
+                            index=df_books.index,
+                            columns=df_books.index)
+
+
+def similarity(title1: str, title2: str, df: pd.DataFrame) -> int:
+    """returns the similarity score of two books"""
+    return df[title1][title2]
+```
+
+Resulting dataframe;
+
+<img src="md_refs/jaccard_output.png">
+
+`Cosine Similarity`

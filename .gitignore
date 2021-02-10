@@ -3,3 +3,4 @@ __pycache__
 .ipynb_checkpoints
 datasets/
 .DS_Store
+product-analytics.code-workspace

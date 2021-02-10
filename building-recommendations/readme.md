@@ -2,9 +2,7 @@
 
 Notes from [Datacamp's course](https://learn.datacamp.com/courses/building-recommendation-engines-in-python), [Eugene Yan's blog](https://eugeneyan.com/tag/recsys/) and elsewhere.
 
-Recommendation engines use the feedback of users to find new relevant items for them or other users, with the assumption that users who have similar preferences in the past are likely to have similar preferences in the futures.
-
-> Recommendation engines target a specific kind of machine learning problem, they are designed to suggest a product, service, or entity to a user based on other users, and their own feedback. 
+> Recommendation engines target a specific kind of machine learning problem, they are designed to suggest a product, service, or entity to a user based on other users, and their own feedback.
 
 There is a many-to-many relationship between the items being recommended and the users. Users interact with many items. Each item is interacted with by many users.
 
@@ -40,7 +38,6 @@ You can create pairs of items, the item most commonly seen with A. _Note_ we wan
 
 <img src="md_refs/pairs.png" width=300>
 
-
 ```Python
 import pandas as pd
 from itertools import permutations
@@ -62,7 +59,7 @@ pair_counts_df.sort_values(by="size", ascending=False, inplace=True)
 pair_counts_df[pair_counts_df.book_a == "Lord of the Rings"].head()
 ```
 
-## Content based recommendations
+## Content filtering
 
 Recommending items similar to items a user has liked in the past. We need a notion of similarity between items.
 
@@ -136,3 +133,111 @@ Resulting dataframe;
 <img src="md_refs/jaccard_output.png">
 
 `Cosine Similarity`
+
+#### Cosine versus Jaccard
+
+From Data Science Stack Exchange [ref](https://datascience.stackexchange.com/questions/5121/applications-and-differences-for-jaccard-similarity-and-cosine-similarity)
+
+Jaccard Similarity;
+
+$$s_{ij} = \frac{p}{p+q+r}$$
+
+Where;
+
+- $p$ = # of attributes positive for both objects (intersection)
+- $q$ = # of attributes 1 for $i$ and 0 for $j$
+- $r$ = # of attributes 0 for $i$ and 1 for $j$
+
+Cosine Similarity;
+
+$$\frac{A \cdot B}{\|A\|\|B\|}$$
+
+${\|vector\|}$ - is a scalar, denoting the Euclidean norm of the vector (square root of the sum of squares)
+
+> In cosine similarity, the number of common attributes is divided by the product of A and B's distance from zero. It's a measure of distance in high dimensions.
+
+
+> Whereas in Jaccard Similarity, the number of common attributes is divided by the number of attributes that exists in at least one of the two objects.
+
+In cosine similarity all values are between 0 and 1, where 1 is an exact match.
+
+Cosine similarity is better for working with features that have more variation in their data, as opposed to attributes being boolean.
+
+### Working without clear attributes
+
+Often it will not have clear attribute labels relating to an item. However, if the item has text tied to it, we can use this description, or any text related to the item to create labels. This process is known as "Term Frequency Inverse Document Frequency" or TF-IDF to transform the text into something usable.
+
+<img src="md_refs/tfidf.png">
+
+By dividing the the count of word occurrences by total words in the document we reduce the impact of of common words.
+
+```Python
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metric.pairwise import cosine_similarity
+
+# min_df -> only include words that occur at least twice
+# max_df -> exclude words that occur in over 70% of descriptions
+vectorizer = TfidfVectorizer(min_df=2, max_df=0.7)
+
+vectorised_data = vectorizer.fit_transform(df_books.descriptions)
+
+vectorised_data.to_array()  # row for each book, column for each feature
+
+tfidf_df = pd.DataFrame(vectorised_data.to_array(),
+                        columns=vectorizer.get_feature_names()
+                        )
+tfidf_df.index = df_books.book_titles  
+
+# similarity between all rows
+cosine_s_array = cosine_similarity(tfidf_df)
+
+# plot a matrix book x book
+cosine_similarity_df = pd.DataFrame(cosine_similarity_array, 
+                            index=tfidf_df.index, 
+                            columns=tfidf_df.index
+                        )
+
+# similarity between two rows
+cosine_s = cosine_similarity(
+                tfidf_df.loc["The Hobbit"].values.reshape(1, -1),
+                tfidf_df.loc["Macbeth"].values.reshape(1, -1)
+            )
+
+# get similarities for a particular title
+cosine_similarity_df.loc["Lord of the Rings"].sort_values(ascending=False)
+```
+
+### Presenting tastes in user profiles
+
+Take all the items a user has engaged with and create mean scores across each attribute to create a "taste profile".
+
+```Python
+# list of title the user has read and enjoyed
+user_books = df_user.books_enjoyed[df_user.user="1234"].values
+
+books_enjoyed_df = tfidf_summary_df.reindex(user_books)  # df of books as rows, attributes as columns
+
+user_tastes = books_enjoyed_df.mean()  # array of mean of column value
+
+# to recommend, 
+    # remove books already liked
+tfidf_subset_df = tfidf_summary_df.drop(user_books, axis=0)
+
+    # Calculate the cosine_similarity and wrap it in a DataFrame
+    # columns is number of features
+similarity_array = cosine_similarity(user_tastes.values.reshape(1, -1), tfidf_subset_df)
+
+similarity_df = pd.DataFrame(similarity_array.T, 
+                    index=tfidf_subset_df.index, 
+                    columns=["similarity_score"]
+                )
+sorted_similarity_df = similarity_df.sort_values(
+                            by="similarity_score",
+                            ascending=False
+                        )
+```
+
+## Collaborative filtering
+
+> Collaborative filtering uses information on user behaviours, activities, or preferences to predict what other users will like based on item or user similarity. In contrast, content filtering is based solely on item metadata (i.e., brand, price, category, etc.). _-- Eugene Yan_
+

@@ -63,7 +63,7 @@ pair_counts_df[pair_counts_df.book_a == "Lord of the Rings"].head()
 
 Recommending items similar to items a user has liked in the past. We need a notion of similarity between items.
 
-Content based recommendations, prioritises items with similar attributes. This allows you to recommend new items, as well as leveraging a long-tail of items.
+Content based recommendations, prioritises items with similar attributes. This allows you to recommend new items, as well as leveraging a long-tail of items. Content filtering works well when we have a lot of information about the items, but not much data on how people feel about them.
 
 Encode attributes as a vector to easily calculate distance and similarity between items;
 
@@ -239,5 +239,33 @@ sorted_similarity_df = similarity_df.sort_values(
 
 ## Collaborative filtering
 
+Collaborative filtering finds users that have the most similar preferences to the user we are making recommendations for and based on that group's preferences, make suggestions.
+
 > Collaborative filtering uses information on user behaviours, activities, or preferences to predict what other users will like based on item or user similarity. In contrast, content filtering is based solely on item metadata (i.e., brand, price, category, etc.). _-- Eugene Yan_
 
+We need to transform data into a matrix of users and the items they rated.
+
+<img src="collab_filtering1.png" width=400>
+
+> Based on this matrix we can compare across users, here it is apparent that User_1 and User_3 have more similar preferences than User_1 and User_2.
+
+### Handling sparse data
+
+This matrix will be extremely sparse. Users won't have a expressed a positive or negative view towards the majority of items, you can't simply drop `NULLS` or fill in missing values with 0 (this is will impact our calculations).
+
+One approach is to centre all the ratings around 0. 0 will therefore represent a neutral rating.
+
+<img src="collab_filtering2.png" width=400>
+
+Do this by subtracting the user's mean rating from each score.
+
+```Python
+# each row represents a users mean rating
+user_avg_rating = user_ratings_pivot.mean(axis=1)
+
+# from each column, subtract the user's mean rating
+user_ratings_pivot = user_ratings_pivot.sub(user_avg_rating, axis=0)
+user_ratings_pivot.fillna(0)
+```
+
+These values should not be used for prediction. Only for comparing users.

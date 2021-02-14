@@ -280,3 +280,59 @@ These values should not be used for prediction. Only for comparing users.
 Take the following example. Both users `B` and `C` are equally similar to user `A`. We cannot predict what the user will think of "The Matrix". If you filled `NULL` values with 0, you'd artificially make user `C` look more similar to user `A`.
 
 <img src="md_refs/collab_filtering3.png" width=300>
+
+### Item-based collaborative filtering
+
+We can also find similarities between products simply by looking at the ratings they have received.
+
+```Python
+# transpose each user's rating of each film
+# so that film titles are the index, user ratings the columns
+move_ratings = user_ratings_table.transpose()
+```
+
+<img src="md_refs/collab_filtering4.png" width=300>
+
+_Note: It appears that this does take into account who has rated the film, not simply the mean and distribution of ratings._ 
+
+`cosine_similarity(sw_IV, sw_V) = [0.5357054]` despite the average rating between pretty different. Whereas Pulp Fiction and Star Wars 4 have a more similar rating on avarage, yet `cosine_similarity(sw_IV, pulp_fiction) = [-0.08386681]`.
+
+```Python
+from sklearn.metrics.pairwise import cosine_similarity
+
+# with similarity scores centred around 0, cosine will be between -1 to 1
+similarities = cosine_similarity(movie_ratings_centered)
+
+cosine_similarity_df = pd.DataFrame(similarities, index=movie_ratings_centered.index, columns=movie_ratings_centered.index)
+
+# Find the similarity values for a specific movie
+cosine_similarity_series = cosine_similarity_df.loc['Star Wars: Episode IV - A New Hope (1977)'].sort_values(ascending=False)
+```
+
+### Using K-nearest neighbours
+
+Predicting how a user might rate an item they have not yet seen. One approach is to find similar users using a K nearest neighbors model and see how they liked the item.
+
+<img src="md_refs/k-nearest-neighbours.png>
+
+`K-NN` finds the k users that are closest measured by a specified metric, to the user in question. It then averages the rating those users gave the item we are trying to get a rating for.
+
+<img src="md_refs/user-user.png.png>
+
+```Python
+from sklearn.neighbors import KNeighborsRegressor
+
+user_knn = KNeighborsRegressor(metric="cosine", n_neighbors=3)
+
+# other_users_x = how users rated every other item in the catalogue
+# other_users_y = how users rated the item in question
+user_knn.fit(other_users_x, other_users_y)
+
+# target_user_x = how the user in question has rated every item to date
+user_user_pred = user_knn.predict(target_user_x)
+user_user_pred  # now contains the predicted avg rating the user would give the item it has not seen
+```
+
+****
+
+Ref: https://towardsdatascience.com/intro-to-recommender-system-collaborative-filtering-64a238194a26

@@ -65,6 +65,8 @@ Recommending items similar to items a user has liked in the past. We need a noti
 
 Content based recommendations, prioritises items with similar attributes. This allows you to recommend new items, as well as leveraging a long-tail of items. Content filtering works well when we have a lot of information about the items, but not much data on how people feel about them.
 
+> This system uses item metadata, such as genre, director, description, actors, etc. for movies, to make these recommendations. The general idea behind these recommender systems is that if a person liked a particular item, he or she will also like an item that is similar to it. [ref](https://www.kaggle.com/ibtesama/getting-started-with-a-movie-recommendation-system)
+
 Encode attributes as a vector to easily calculate distance and similarity between items;
 
 <img src="md_refs/attributes.png" width=300>
@@ -243,9 +245,11 @@ Collaborative filtering finds users that have the most similar preferences to th
 
 > Collaborative filtering uses information on user behaviours, activities, or preferences to predict what other users will like based on item or user similarity. In contrast, content filtering is based solely on item metadata (i.e., brand, price, category, etc.). _-- Eugene Yan_
 
+> This system matches persons with similar interests and provides recommendations based on this matching. Collaborative filters do not require item metadata like its content-based counterparts. [ref](https://www.kaggle.com/ibtesama/getting-started-with-a-movie-recommendation-system)
+
 We need to transform data into a matrix of users and the items they rated.
 
-<img src="collab_filtering1.png" width=400>
+<img src="md_refs/collab_filtering1.png" width=400><br>
 
 > Based on this matrix we can compare across users, here it is apparent that User_1 and User_3 have more similar preferences than User_1 and User_2.
 
@@ -255,11 +259,14 @@ This matrix will be extremely sparse. Users won't have a expressed a positive or
 
 One approach is to centre all the ratings around 0. 0 will therefore represent a neutral rating.
 
-<img src="collab_filtering2.png" width=400>
+<img src="md_refs/collab_filtering2.png">
 
 Do this by subtracting the user's mean rating from each score.
 
 ```Python
+# make user_id the index, each column a move, each cell a rating
+user_ratings_table = user_ratings.pivot(index="userId", columns="title", values="rating")
+
 # each row represents a users mean rating
 user_avg_rating = user_ratings_pivot.mean(axis=1)
 
@@ -269,3 +276,7 @@ user_ratings_pivot.fillna(0)
 ```
 
 These values should not be used for prediction. Only for comparing users.
+
+Take the following example. Both users `B` and `C` are equally similar to user `A`. We cannot predict what the user will think of "The Matrix". If you filled `NULL` values with 0, you'd artificially make user `C` look more similar to user `A`.
+
+<img src="md_refs/collab_filtering3.png" width=300>

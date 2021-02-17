@@ -317,9 +317,46 @@ Predicting how a user might rate an item they have not yet seen. One approach is
 
 `K-NN` finds the k users that are closest measured by a specified metric, to the user in question. It then averages the rating those users gave the item we are trying to get a rating for.
 
-<img src="md_refs/user-user.png.png>
+<img src="md_refs/user-user.png>
+
+Once you have a matrix of user similarities
+
+<img src="md_refs/user-similarities.png>
 
 ```Python
+# for a user get the 10 most similar
+user_similarity_series = user_similarities.loc['user_001'].sort_values(ascending=False)
+nearest_neighbors = user_similarity_series[1:11].index  # provides a list of user_ids
+
+neighbor_ratings = user_ratings_table.reindex(nearest_neighbors
+                    )  # reindex filters the df to list of users provided
+
+print(neighbor_ratings['Apollo 13 (1995)'].mean()
+    ) # mean rating users most similar to user_001 gave the film
+```
+
+Getting the data for prediction
+
+- `target_user_x` - Centred ratings that `user_001` has given to the movies they have seen.
+- `other_users_x` - Centred ratings for all other users and the movies they have rated excluding the movie Apollo 13.
+- `other_users_y` - Raw ratings that all other users have given the movie Apollo 13.
+
+```Python
+# Drop the column you are trying to predict
+users_to_ratings.drop("Apollo 13 (1995)", axis=1, inplace=True)
+
+# Get the data for the user you are predicting for
+target_user_x = users_to_ratings.loc[["user_001"]]
+
+# Get the target data from user_ratings_table - not centred around 0
+other_users_y = user_ratings_table["Apollo 13 (1995)"]
+
+# Get the data for only those that have seen the movie
+other_users_x = users_to_ratings[other_users_y.notnull()]
+
+# Remove those that have not seen the movie from the target
+other_users_y.dropna(inplace=True)
+
 from sklearn.neighbors import KNeighborsRegressor
 
 user_knn = KNeighborsRegressor(metric="cosine", n_neighbors=3)
@@ -332,6 +369,26 @@ user_knn.fit(other_users_x, other_users_y)
 user_user_pred = user_knn.predict(target_user_x)
 user_user_pred  # now contains the predicted avg rating the user would give the item it has not seen
 ```
+
+## Item-based versus user-based filtering
+
+> user-based collaborative filtering finds similar users to the one you are making a recommendation for and suggests items these similar users enjoy. Item-based collaborative filtering finds similar items to those that the user you are making recommendations for likes and recommends those.
+
+Pros of __item based filtering__;
+
+- The meta-data relating to items is stationery, whereas user preferences change over time
+- The recommendations are often easier to explain (both to the consumer and business folks), "we are recommending x because you liked y"
+- Similarities between products can be pre-computed. Each day the items in the inventory and the similarity between them can be calculated offline
+
+Cons of __item based filtering__;
+
+- The recommendations are typically very obvious. Recommending the next episode in a series or "another wallet" may not be very valuable (though it may be for songs)
+
+__User based filtering__ can provide much more novel suggestions
+
+- One of the pros of __user based filtering__ is finding less popular items 
+
+## Matrix factorisation and validating your predictions
 
 ****
 

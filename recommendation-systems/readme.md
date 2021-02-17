@@ -452,7 +452,7 @@ From "Essential Math for Data Science"
 
 When multiplying two matrices, the `k` must be equal (rows of the first matrix and columns of the second)
 
-<img src="md_refs/matrix-multi.png">
+<img src="md_refs/matrix-multi.png" width=300>
 
 ****
 

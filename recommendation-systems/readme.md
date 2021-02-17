@@ -418,7 +418,11 @@ From Wikipedia:
 > 
 > This family of methods became widely known during the Netflix prize challenge due to its effectiveness as reported by Simon Funk in his 2006 [blog post](https://sifter.org/~simon/journal/20061211.html)
 
-Notes from Simon Funk:
+From "Essential Math for Data Science"
+
+> Matrix decomposition is the process of splitting a matrix into multiple pieces. For instance, selecting a subset of the data to reduce dimensionality without losing much information (e.g. Principal Component Analysis)
+
+### Notes from Simon Funk
 
 - If meaningful generalities can help you represent your data with fewer numbers, finding a way to represent your data in fewer numbers can often help you find meaningful generalities.
 - In practice this means defining a model of how the data is put together from a smaller number of parameters, and then deriving a method of automatically inferring from the data what those parameters should actually be.  
@@ -444,6 +448,11 @@ Notes from Simon Funk:
 - The point here is simply that any time you're averaging a small number of examples, the true average is most likely nearer the apriori average than the sparsely observed average.
 - This is essentially equivalent to penalizing the magnitude of the features, and so is probably related to [Tikhonov regularisation](https://en.wikipedia.org/wiki/Tikhonov_regularization) (_a special case of ridge regression, ridge regression is particularly useful to mitigate the problem of multicollinearity in linear regression_). The point here is to try to cut down on over fitting, ultimately allowing us to use more features.
 
+### Matrix multiplication
+
+When multiplying two matrices, the `k` must be equal (rows of the first matrix and columns of the second)
+
+<img src="md_refs/matrix-multi.png">
 
 ****
 

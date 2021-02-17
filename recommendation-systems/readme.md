@@ -374,6 +374,8 @@ user_user_pred  # now contains the predicted avg rating the user would give the 
 
 > user-based collaborative filtering finds similar users to the one you are making a recommendation for and suggests items these similar users enjoy. Item-based collaborative filtering finds similar items to those that the user you are making recommendations for likes and recommends those.
 
+> any given movie can, to a rough degree of approximation, be described in terms of some basic attributes such as overall quality, whether it's an action movie or a comedy, what stars are in it, and so on. And every user's preferences can likewise be roughly described in terms of whether they tend to rate high or low, whether they prefer action movies or comedies, what stars they like, and so on. -- Simon Funk, on the Netflix Prize
+
 Pros of __item based filtering__;
 
 - The meta-data relating to items is stationery, whereas user preferences change over time
@@ -389,6 +391,59 @@ __User based filtering__ can provide much more novel suggestions
 - One of the pros of __user based filtering__ is finding less popular items 
 
 ## Matrix factorisation and validating your predictions
+
+Commonly, we deal with sparse matrices, where a large number of items have not be reviewed by multiple people.
+
+_Note_, the "user-rating" matrix is the heart and soul of recommendation engines. The matrix will have `# users` * `# items`
+
+<img src="md_refs/sparse-matrix.png">
+
+`sparsity = df.isnull().sum() / df.size`
+
+The aim of recommendation systems is often to "fill in the blanks" of this matrix
+
+- In the Netflix Price they adopted `mean squared error` as the measure of accuracy, if you guess 1.5 and the actual rating was 2, you get docked for $(2 - 1.5)^2$ points, or 0.25
+
+This creates two problems; 
+
+(1) algorithms such as nearest neighbours cannot handle nulls values, 
+
+(2) we often use the mean rating of a product from similar users or products, filtering down to similarity might result in getting the mean from a very small subset, distorting the numbers (i.e. we lose the law of large numbers and may be greatly influenced by a single outlier)
+
+__Matrix factorisation__ is commonly used in recommendation systems.
+
+From Wikipedia:
+
+> Matrix factorization algorithms work by decomposing the user-item interaction matrix into the product of two lower dimensionality rectangular matrices.
+> 
+> This family of methods became widely known during the Netflix prize challenge due to its effectiveness as reported by Simon Funk in his 2006 [blog post](https://sifter.org/~simon/journal/20061211.html)
+
+Notes from Simon Funk:
+
+- If meaningful generalities can help you represent your data with fewer numbers, finding a way to represent your data in fewer numbers can often help you find meaningful generalities.
+- In practice this means defining a model of how the data is put together from a smaller number of parameters, and then deriving a method of automatically inferring from the data what those parameters should actually be.  
+  - this is `singular value decomposition`
+- We'll assume that a user's rating of a movie is composed of a sum of preferences about the various aspects of that movie.
+  - For example, imagine that we limit it to forty aspects, such that each movie is described only by forty values saying how much that movie exemplifies each aspect, and correspondingly each user is described by forty values saying how much they prefer each aspect.
+  - To combine these all together into a rating, we just multiply each user preference by the corresponding movie aspect, and then add those forty leanings up into a final opinion of how much that user likes that movie.
+  - E.g., Terminator might be (action=1.2,chickflick=-1,...), and user Joe might be (action=3,chickflick=-1,...), and when you combine the two you get Joe likes Terminator with 3*1.2 + -1*-1 + ... = 4.6+... . Note here that Terminator is tagged as an anti-chickflick, and Joe likewise as someone with an aversion to chickflicks, so Terminator actively scores positive points with Joe for being decidedly un-chickflicky. (Point being: negative numbers are ok.) 
+  - all told that model requires 40*(17K+500K) values, or about 20M -- 400 times less than the original 8.5B (17K movies * 500K users).
+  - `ratingsMatrix[user][movie] = sum (userFeature[f][user] * movieFeature[f][movie]) for f from 1 to 40`
+  - In matrix terms, the original matrix has been decomposed into two very oblong matrices: the 17,000 x 40 movie aspect matrix, and the 500,000 x 40 user preference matrix.
+  - Multiplying those together just performs the products and sums described above, resulting in our approximation to the 17,000 x 500,000 original rating matrix. 
+  - Singular value decomposition is just a mathematical trick for finding those two smaller matrices which minimize the resulting approximation error--specifically the mean squared error
+  - If you write out the equations for the error between the SVD-like model and the original data --just the given values, not the empties-- and then take the derivative with respect to the parameters we're trying to infer, you get a rather simple result
+- `userValue[user] += lrate * err * movieValue[movie];`
+- `movieValue[movie] += lrate * err * userValue[user];`
+  - Lrate is the learning rate, a rather arbitrary number which I fortuitously set to 0.001 on day one and regretted it every time I tried anything else after that
+  - Err is the residual error from the current prediction
+
+- You would think the average rating for a movie would just be... its average rating! Alas, Occam's razor was a little rusty that day. 
+- Trouble is, to use an extreme example, what if there's a movie which only appears in the training set once, say with a rating of 1. Does it have an average rating of 1? Probably not! In fact you can view that single observation as a draw from a true probability distribution who's average you want... and you can view that true average itself as having been drawn from a probability distribution of averages, the histogram of average movie ratings essentially.
+- If we assume both distributions are Gaussian, then according to my shoddy math the actual best-guess mean should be a linear blend between the observed mean and the apriori mean, with a blending ratio equal to the ratio of variances.
+- The point here is simply that any time you're averaging a small number of examples, the true average is most likely nearer the apriori average than the sparsely observed average.
+- This is essentially equivalent to penalizing the magnitude of the features, and so is probably related to [Tikhonov regularisation](https://en.wikipedia.org/wiki/Tikhonov_regularization) (_a special case of ridge regression, ridge regression is particularly useful to mitigate the problem of multicollinearity in linear regression_). The point here is to try to cut down on over fitting, ultimately allowing us to use more features.
+
 
 ****
 

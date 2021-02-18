@@ -2,6 +2,8 @@
 
 We want to move from event data to metrics summarising user behaviour.
 
+## On metrics
+
 __Summary Sean Taylor's post on "designing and evaluating metrics"__ [ref](https://medium.com/@seanjtaylor/designing-and-evaluating-metrics-5902ad6873bf)
 
 > A metric is simultaneously 1) a designed artifact, 2) a lens through which we observe phenomena, and 3) way we set and monitor goals. 
@@ -42,3 +44,17 @@ __(5) Causal Proximity__, a good metric can be affected by causes under your con
 > I use “proximity” to capture the idea that a metric “close” in “causal space” (e.g. in a path along a causal DAG) to policies you are capable of changing.
 
 We must choose a metric with higher proximity and rely on a theory about how that is useful for some ultimate goal — a sacrifice of faithfulness. We sometimes call this strategy a proxy metric, acknowledging that it may not be exactly what we care about, but that is a concept on which we can detect effects.
+
+__"Good behavioural metrics are the most important step in a successful churn analysis"__ _-- Carl Gold_
+
+## Creating customer metrics
+
+Feature engineering - find some notes
+
+Use sliding windows, for example, rather than a monthly calculation use a moving 28 day window.
+
+Human behaviour often follows weekly cycles. Consequently, it is best to measure using time windows that are multiples of 7 days.
+
+## QA
+
+It's important to run quality assurance (QA) tests on the underlying events data. Customer event data in data warehouses is often unreliable. This unreliability can manifest in different ways; for example, events can be lost on the network before they reach the data warehouse. In general, event data does not receive a lot of scrutiny.

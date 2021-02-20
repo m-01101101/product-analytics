@@ -4,3 +4,4 @@ __pycache__
 datasets/
 .DS_Store
 product-analytics.code-workspace
+**/.DS_Store

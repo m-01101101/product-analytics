@@ -448,11 +448,152 @@ From "Essential Math for Data Science"
 - The point here is simply that any time you're averaging a small number of examples, the true average is most likely nearer the apriori average than the sparsely observed average.
 - This is essentially equivalent to penalizing the magnitude of the features, and so is probably related to [Tikhonov regularisation](https://en.wikipedia.org/wiki/Tikhonov_regularization) (_a special case of ridge regression, ridge regression is particularly useful to mitigate the problem of multicollinearity in linear regression_). The point here is to try to cut down on over fitting, ultimately allowing us to use more features.
 
-### Matrix multiplication
+### Matrix factorisation
 
-When multiplying two matrices, the `k` must be equal (rows of the first matrix and columns of the second)
+When multiplying two matrices, the `k` must be equal (rows of the first matrix and columns of the second). _Refer to my notes on linear algebra for more on matrix multiplication [ref](https://m-01101101.github.io/on-data/markdown/2021/02/20/linear-algebra.html)_
 
 <img src="md_refs/matrix-multi.png" width=300>
+
+If every user has given at least one rating, and every item been given at least one rating we can multiply factors to create a fully filled matrix
+
+<img src=md_refs/matrix-multi2.png width=300>
+
+### Latent features
+
+When we multiply the two matrices of users and products, we do so using "observed features". This computation creates a number of unnamed columns, these are "latent features". For example,
+
+> 'words' extracted from the documents are features. If you factorize the data of words you can find 'topics', where 'topic' is a group of words with semantic relevance. Low-rank matrix factorization maps several rows (observed features) to a smaller set of rows (latent features).
+> 
+> The underlying idea is that latent features are semantically relevant 'aggregates' of observed features. When you have large-scale, high-dimensional, and noisy observed features, it makes sense to build your classifier on latent features. [cross validated](https://datascience.stackexchange.com/questions/749/meaning-of-latent-features#:~:text=At%20the%20expense%20of%20over,from%20the%20documents%20are%20features.)
+
+This creation of matrix factorisation does lead to some information loss, as the latent features are approximations of a number of underlying features. However, they are useful in reducing the dimensions of our model.
+
+Technically, what this information loss means, is that we cannot multiply out back to the original matrix.
+
+Being able to decompose a matrix and revert it back to the original can only be done for square matrices through _eigendecomposition_.
+
+```Python
+# store the dot product of user and item matrices
+predictions_df = np.dot(user_matrix, item_matrix)
+
+# this will be the same shape, but not equal to our original dataframe
+print(predictions_df)
+print(original_df)
+```
+
+<img src=md_refs/matrix-multi3.png width=300>
+
+TODO: notes from: https://datajobs.com/data-science-repo/Recommender-Systems-[Netflix].pdf
+
+### Singular value decomposition (SVD)
+
+Singular value decomposition finds factors for your matrix.
+
+With the SVD, you decompose a matrix in three other matrices.
+
+<img src=md_refs/svd1.png width=300>
+
+- U is the user matrix
+- V transpose is the features matrix (transpose in this case means that V has been flipped over its diagonal)
+- U and V are orthogonal (separated by a 90° angle), the dot product will be 0
+- D, or sigma $\sigma$, is a diagonal matrix which can be thought of as the weights of the latent features
+  - in a diagonal matrix, all the values are zero, expect for the diagonal, this implies rescaling without rotation
+
+> A is a matrix that can be seen as a linear transformation. This transformation can be decomposed in three sub-transformations: 1. rotation, 2. re-scaling, 3. rotation. These three steps correspond to the three matrices U, D, and V. _(Essential Math for Data Science)[https://www.essentialmathfordatascience.com/]_
+
+We can multiple these three matrices together to get our utility matrix.
+
+- Find the dot product of $U$ and $\sigma$
+- Then find the dot product of the result and $V^t$
+
+Our utility matirx will now have filled in values.
+
+_Note_, before performing SVD you should centre the values (subtracting the mean), then once having performed the multiplication of the two dot products, you can add the average ratings back to have comparable scores to the original values.
+
+```Python
+# Get the average rating for each user 
+avg_ratings = user_ratings_df.mean(axis=1)
+
+# Center each user's ratings around 0
+user_ratings_centered = user_ratings_df.sub(avg_ratings, axis=1)
+
+# Fill in all missing values with 0s
+user_ratings_centered.fillna(0, inplace=True)
+
+from scipy.sparse.linalg import svds
+import numpy as np
+
+# Decompose the matrix
+U, sigma, Vt = svds(user_ratings_centered)
+
+# sigman is returned as a list, we need to transform into a diagonal matrix
+sigma = np.diag(sigma)
+
+# Dot product of U and sigma
+U_sigma = np.dot(U, sigma)
+
+# Dot product of result and Vt
+U_sigma_Vt = np.dot(U_sigma, Vt)
+
+# Add back on the row means contained in avg_ratings
+uncentered_ratings = U_sigma_Vt + avg_ratings.values.reshape(-1, 1)
+
+# Create DataFrame of the results
+calc_pred_ratings_df = pd.DataFrame(uncentered_ratings, 
+                                    index=user_ratings_df.index,
+                                    columns=user_ratings_df.columns
+                                   )
+
+# now we have a recalculated matrix with all the gaps filled in
+# Sort the ratings of User 5 from high to low
+user_5_ratings = calc_pred_ratings_df.loc["User_5",:].sort_values(ascending=False)
+```
+
+### Validating predictions
+
+> What makes recommendation engines a little different when measuring predictions is that in more traditional machine learning models,you are trying to predict a single feature or column, but with recommendation engines, what you are trying to predict is far more inconsistent.
+
+Almost every user has reviewed different items, and each item has received reviews from different groups of users.
+
+For this reason, we cannot split our holdout set in the same way that we can for typical machine learning. In those cases, we would just split off a proportion of the row and use them to test our predictions. For recommendation engines, on the other hand, we need to remove a different chunk of the DataFrame.
+
+<img src=md_refs/validating_predictions.png width=350>
+
+To do this, we
+
+(1) Remove a chunk of the DataFrame, filling the values will `NULL`s
+
+(2) Then we repeat the process of matrix factorisation to fill out the DataFrame
+
+(3) We now have predicted values and the original actual values
+
+(4) We mask the hold-out set to compare only data that existed (i.e. non-missing fields) with the predicted data
+
+(5) Compute the RMSE (root mean squared error) between the two data sets. Take the difference, square it (as we don't care in which direction it's wrong). Take the average of the squared differences and find the square root. $\sqrt\frac{5}{3}$ in the example below
+
+<img src=md_refs/rmse.png width=300>
+
+```Python
+# Extract the ground truth to compare your predictions against
+actual_values = act_ratings_df.iloc[:20, :100].values
+avg_values = avg_pred_ratings_df.iloc[:20, :100].values
+predicted_values = calc_pred_ratings_df.iloc[:20, :100].values  # technique of use matrix factorisation
+
+
+from sklearn.metrics import mean_squared_error
+
+mask = ~np.isnan(actual_values)`  # mask our hold out data set
+
+mean_squared_error(actual_values[mask],
+                predicted_values[mask],
+                squared=False  # calculate root mean square error, as opposed to mean square error
+            )
+
+mean_squared_error(actual_values[mask],
+                avg_values[mask],
+                squared=False
+            )            
+```
 
 ****
 

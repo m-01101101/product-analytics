@@ -452,11 +452,11 @@ From "Essential Math for Data Science"
 
 When multiplying two matrices, the `k` must be equal (rows of the first matrix and columns of the second). _Refer to my notes on linear algebra for more on matrix multiplication [ref](https://m-01101101.github.io/on-data/markdown/2021/02/20/linear-algebra.html)_
 
-<img src="md_refs/matrix-multi.png" width=300>
+<img src="md_refs/matrix-multi.png" width=400>
 
 If every user has given at least one rating, and every item been given at least one rating we can multiply factors to create a fully filled matrix
 
-<img src=md_refs/matrix-multi2.png width=300>
+<img src=md_refs/matrix-multi2.png>
 
 ### Latent features
 

@@ -313,15 +313,15 @@ cosine_similarity_series = cosine_similarity_df.loc['Star Wars: Episode IV - A N
 
 Predicting how a user might rate an item they have not yet seen. One approach is to find similar users using a K nearest neighbors model and see how they liked the item.
 
-<img src="md_refs/k-nearest-neighbours.png>
+<img src=md_refs/k-nearest-neighbours.png>
 
 `K-NN` finds the k users that are closest measured by a specified metric, to the user in question. It then averages the rating those users gave the item we are trying to get a rating for.
 
-<img src="md_refs/user-user.png>
+<img src=md_refs/user-user.png>
 
 Once you have a matrix of user similarities
 
-<img src="md_refs/user-similarities.png>
+<img src=md_refs/user-similarities.png>
 
 ```Python
 # for a user get the 10 most similar

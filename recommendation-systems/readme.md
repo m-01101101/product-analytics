@@ -111,7 +111,7 @@ print(jaccard_score(
 ))
 
 # similarity between all items at once
-from scipy.spatial_distance import pdist, squareform
+from scipy.spatial.distance import pdist, squareform
 
 #  pdist == pairwise distance
 jaccard_distances = pdist(df_books.values, metric="jaccard")
